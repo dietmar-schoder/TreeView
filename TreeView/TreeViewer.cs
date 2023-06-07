@@ -6,7 +6,7 @@ namespace TreeView
     {
         public MyTreeElement GenerateTree(int numberOfChildren, int numberOfLevels)
         {
-            var rootElement = new MyTreeElement(isRoot: true);
+            var rootElement = new MyTreeElement();
             GenerateChildren(rootElement);
             return rootElement;
 
@@ -14,8 +14,8 @@ namespace TreeView
             {
                 for (int i = 0; i < numberOfChildren; i++)
                 {
-                    var child = treeElement.AddChild(new MyTreeElement());
-                    if (child.Level < numberOfLevels)
+                    var child = treeElement.NewChild();
+                    if (child.Level < numberOfLevels - 1)
                     {
                         GenerateChildren(child);
                     }

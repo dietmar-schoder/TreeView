@@ -22,14 +22,12 @@
 
         public List<TreeElementConnection> TreeElementConnections { get; set; } = new();
 
-        public TreeElement() { }
-
-        public TreeElement AddChild(TreeElement element)
+        public TreeElement AddAsChild(TreeElement element)
         {
             element.Parent = this;
             element.Level = Level + 1;
             Children.Add(element);
-            return this;
+            return element;
         }
     }
 }

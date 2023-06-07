@@ -4,16 +4,14 @@ namespace TreeView
 {
     public class MyTreeElement : TreeElement
     {
-        public string Number { get; set; }
+        public string Number { get; set; } = "1";
 
-        public MyTreeElement(bool isRoot = false) : base()
-            => Number = isRoot ? "1" : string.Empty;
-
-        public MyTreeElement AddChild(MyTreeElement element)
+        public MyTreeElement NewChild()
         {
-            base.AddChild(element);
-            element.Number = $"{Number}.{Children.Count}";
-            return element;
+            var child = new MyTreeElement();
+            AddAsChild(child);
+            child.Number = $"{Number}.{Children.Count}";
+            return child;
         }
     }
 }
