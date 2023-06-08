@@ -12,13 +12,9 @@
 
         public bool HasChildren => Children.Count > 0;
 
-        public int X { get; set; }
+        public bool ChildrenAreVertical => Level % 2 == 1;
 
-        public int Y { get; set; }
-
-        public int Width { get; set; }
-
-        public int Height { get; set; }
+        public ViewElement ViewElement { get; set; }
 
         public List<TreeElementConnection> TreeElementConnections { get; set; } = new();
 
