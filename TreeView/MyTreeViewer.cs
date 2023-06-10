@@ -1,6 +1,6 @@
 namespace TreeView
 {
-    public class TreeViewer : ITreeViewer
+    public class MyTreeViewer : IMyTreeViewer
     {
         private const string FONT_FAMILY = "font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;";
         private const string FONT_SIZE = "font-size:14px;";
@@ -8,7 +8,7 @@ namespace TreeView
         private readonly Tree.ITreePanel _treePanel;
         private MyTreeElement _tree = new();
 
-        public TreeViewer(Tree.ITreePanel treePanel) => _treePanel = treePanel;
+        public MyTreeViewer(Tree.ITreePanel treePanel) => _treePanel = treePanel;
 
         public void GenerateTree(int numberOfChildren, int numberOfLevels)
         {
