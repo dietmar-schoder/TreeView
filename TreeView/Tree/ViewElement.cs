@@ -24,39 +24,15 @@
 
         public Position Position { get; set; }
 
-        public string Colour { get; set; }
-
-        public string ToSvgTree
-        {
-            get
-            {
-                var svg = ToHtmlStart();
-                if (ViewElements is not null)
-                ViewElements.ForEach(e => { svg += e.ToSvgTree; });
-                svg += ToHtmlEnd();
-                return svg;
-            }
-        }
-
         public bool AddMargins => ViewElements == null;
 
-        public ViewElement(
-            Orientation contentOrientation = Orientation.Horizontal,
-            Alignment alignment = Alignment.LeftTop,
-            int topMargin = 0)
-        {
-            ContentOrientation = contentOrientation;
-            Alignment = alignment;
-            TopMargin = topMargin;
-        }
+        public ViewElement(Orientation contentOrientation = Orientation.Horizontal, Alignment alignment = Alignment.LeftTop, int topMargin = 0)
+            => (ContentOrientation, Alignment, TopMargin) = (contentOrientation, alignment, topMargin);
 
         public ViewElement() { }
 
         public ViewElement(int width, int height)
-        {
-            Width = width;
-            Height = height;
-        }
+            => (Width, Height) = (width, height);
 
         private ViewElement AddContainer(
             Orientation contentOrientation = Orientation.Horizontal,
@@ -84,17 +60,6 @@
             CalculateXYs();
             return this;
         }
-
-        public virtual string ToHtmlStart() => string.Empty;
-        //{
-        //    //For testing:
-        //    return $"<rect x=\"{X}\" y=\"{Y}\"" +
-        //    $" width=\"{Width}\"" +
-        //    $" height=\"{Height}\"" +
-        //    $" style=\"fill:transparent;stroke-width:1;stroke:rgb(196,196,196)\" />";
-        //}
-
-        public virtual string ToHtmlEnd() => string.Empty;
 
         public virtual void AdaptWidthCenter()
             => Width = Alignment == Alignment.Center

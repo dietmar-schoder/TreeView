@@ -12,11 +12,16 @@
 
         public bool HasChildren => Children.Count > 0;
 
+        public bool HasMoreThanOneHorizontalChildren => HasChildren && Children.Count > 1 && !ChildrenAreVertical;
+
         public bool ChildrenAreVertical => Level % 2 == 1;
 
         public ViewElement ViewElement { get; set; }
 
         public List<TreeElementConnection> TreeElementConnections { get; set; } = new();
+
+        public void AddConnection(StructureLine connection)
+            => TreeElementConnections.Add(new TreeElementConnection(connection));
 
         public TreeElement AddAsChild(TreeElement element)
         {

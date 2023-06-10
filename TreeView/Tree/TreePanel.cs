@@ -1,10 +1,8 @@
 ﻿namespace TreeView.Tree
 {
-    public class TreePanel
+    public class TreePanel : ViewElement
     {
         public List<TreeElement> TreeElements { get; set; } = new();
-
-        public List<TreeElementConnection> TreeElementConnections { get; set; } = new();
 
         private readonly int _boxWidth;
 
@@ -13,23 +11,22 @@
         private readonly int _margin;
 
         private TreePanel(MyTreeElement rootElement, int boxWidth, int boxHeight, int margin)
+            : base()
         {
             (_boxWidth, _boxHeight, _margin) = (boxWidth, boxHeight, margin);
-            //------------
-            var page = new TreeViewElement(rootElement, "Schoder.Tree Example");
-            var structureBox = page.AddVerticalBox();
+
+            var structureBox = AddVerticalBox();
             AddParentAndChildren(rootElement, structureBox);
+            CalculateSizesAndXYs();
+            CenterHorizontalParents(rootElement);
+            AddConnections(rootElement);
+            Tree2List(rootElement);
 
             void AddParentAndChildren(MyTreeElement treeElement, ViewElement parentBox)
             {
                 var branchBox = treeElement.HasChildren ? parentBox.AddVerticalBox() : parentBox;
-
-                //treeElement.ViewElement = new HyperlinkViewElement(treeElement.Number);
-                // -> create SVG in MyTreeElement
-
                 treeElement.ViewElement = new ViewElement { Width = _boxWidth, Height = _boxHeight };
                 branchBox.AddElement(treeElement.ViewElement);
-
                 if (treeElement.HasChildren)
                 {
                     var childrenBox = treeElement.ChildrenAreVertical ? branchBox.AddVerticalBox() : branchBox.AddHorizontalBox();
@@ -40,16 +37,10 @@
                     }
                 }
             }
-            //------------
-            page.CalculateSizesAndXYs();
-            CenterHorizontalParents(rootElement);
-            AddConnections(rootElement);
-
-            Tree2Lists(rootElement);
 
             void CenterHorizontalParents(MyTreeElement element)
             {
-                if (element.HasChildren && element.Children.Count > 1 && !element.ChildrenAreVertical)
+                if (element.HasMoreThanOneHorizontalChildren)
                 {
                     if (element.Children.Count % 2 == 0)
                     {
@@ -64,12 +55,9 @@
                     }
                 }
 
-                if (element.HasChildren)
+                foreach (MyTreeElement child in element.Children)
                 {
-                    foreach (MyTreeElement child in element.Children)
-                    {
-                        CenterHorizontalParents(child);
-                    }
+                    CenterHorizontalParents(child);
                 }
             }
 
@@ -77,20 +65,39 @@
             {
                 if (element.HasChildren)
                 {
-                    //page.AddElement(new StructLineViewElement(element));
-                    // -> element.TreeElementConnections.Add(new StructLineViewElement(element));
+                    if (element.ChildrenAreVertical)
+                    {
+                        element.AddConnection(StructureLine.Vertical(element.ViewElement.X + 10, element.ViewElement.Y + 111, element.Children.Last().ViewElement.Y + 56));
+                    }
+                    else
+                    {
+                        if (element.Children.Count > 1)
+                        {
+                            element.AddConnection(StructureLine.Vertical(element.ViewElement.X + 90, element.ViewElement.Y + 111, element.ViewElement.Y + 111 + 10));
+                            element.AddConnection(StructureLine.Horizontal(element.Children.First().ViewElement.X + 90, element.Children.Last().ViewElement.X + 90, element.Children.First().ViewElement.Y - 10));
+                        }
+                    }
+
+                    foreach (var child in element.Children)
+                    {
+                        if (element.ChildrenAreVertical)
+                        {
+                            element.AddConnection(StructureLine.Horizontal(element.ViewElement.X + 10, child.ViewElement.X, child.ViewElement.Y + 56));
+                        }
+                        else
+                        {
+                            element.AddConnection(StructureLine.Vertical(child.ViewElement.X + 90, child.ViewElement.Y, child.ViewElement.Y - (element.Children.Count == 1 ? 20 : 10)));
+                        }
+                    }
+
                     element.Children.ForEach(child => AddConnections(child));
                 }
             }
 
-            void Tree2Lists(TreeElement treeElement)
+            void Tree2List(TreeElement treeElement)
             {
                 TreeElements.Add(treeElement);
-                TreeElementConnections.AddRange(treeElement.TreeElementConnections);
-                if (treeElement.HasChildren)
-                {
-                    treeElement.Children.ForEach(child => { Tree2Lists(child); });
-                }
+                treeElement.Children.ForEach(child => { Tree2List(child); });
             }
         }
 

@@ -1,4 +1,5 @@
 using TreeView.Tree;
+using Microsoft.AspNetCore.Mvc;
 
 namespace TreeView
 {
@@ -7,6 +8,8 @@ namespace TreeView
         public MyTreeElement GenerateTree(int numberOfChildren, int numberOfLevels)
         {
             var rootElement = new MyTreeElement();
+            rootElement.Width = 180;
+            rootElement.Height = (int)(rootElement.Width / 1.61803398875);
             GenerateChildren(rootElement);
             return rootElement;
 
@@ -28,21 +31,30 @@ namespace TreeView
 
         public IResult GetHtml(TreePanel treePanel)
         {
+            var html = DoctypeHtmlHead("Schoder.Tree Example") +
+                $"<body style=\"padding:0;width:{treePanel.Width}px;margin:0 auto;\">" +
+                $"<svg width=\"{treePanel.Width}\" height=\"{treePanel.Height}\"" +
+                $" viewBox=\"0 0 {treePanel.Width} {treePanel.Height}\" xmlns=\"http://www.w3.org/2000/svg\">";
+
             // Draw result
-            foreach (var element in treePanel.TreeElements)
+            foreach (MyTreeElement element in treePanel.TreeElements)
             {
                 // draw box
-                var x = element.X;
-                // ...
-            }
-            foreach (var connection in treePanel.TreeElementConnections)
-            {
-                // draw lines connecting boxes
-                var x1 = connection.X1;
-                // ...
+                html += element.ToSvg;
+                foreach (var connection in element.TreeElementConnections)
+                {
+                    // draw lines connecting boxes
+                    html += connection.ToSvg;
+                }
             }
 
-            return Results.Empty;
+            html += "</svg></body></html>";
+
+            return new HtmlContent(html);
+
+            string DoctypeHtmlHead(string htmlTabTitle)
+                => $"<!DOCTYPE html><html style=\"{Constants.FONT_FAMILY}{Constants.FONT_SIZE}margin-left:calc(100vw - 100%);\">" +
+                    $"<head><title>{htmlTabTitle}</title><meta charset=\"utf-8\"></head>";
         }
     }
 }

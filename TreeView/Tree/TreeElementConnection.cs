@@ -2,12 +2,16 @@
 {
     public class TreeElementConnection
     {
-        public int X1 { get; set; }
+        private readonly StructureLine _structureLine;
 
-        public int Y1 { get; set; }
+        public string ToSvg
+            => $"<line x1=\"{_structureLine.X1}\"" +
+                $" y1=\"{_structureLine.Y1}\"" +
+                $" x2=\"{_structureLine.X2} \"" +
+                $" y2=\" {_structureLine.Y2}\"" +
+                $" style=\"stroke-width:1px;stroke:rgb(0,0,0)\" />";
 
-        public int X2 { get; set; }
-
-        public int Y2 { get; set; }
+        public TreeElementConnection(StructureLine structureLine)
+            => _structureLine = structureLine;
     }
 }

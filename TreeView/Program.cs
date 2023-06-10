@@ -1,19 +1,21 @@
 using TreeView;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ITreeViewer, TreeViewer>();
 
 var app = builder.Build();
-app.UseSwagger();
-app.UseSwaggerUI();
 
 app.MapGet("index", (ITreeViewer treeViewer) =>
 {
-    var tree = treeViewer.GenerateTree(2, 5);
-    var treePanel = treeViewer.CreateTreePanel(tree, 100, 60, 8);
+    var boxWidth = 180;
+    var boxHeight = (int)(boxWidth / 1.61803398875);
+    var noOfChildrenPerParent = 2;
+    var noOfLevels = 8;
+    var tree = treeViewer.GenerateTree(noOfChildrenPerParent, noOfLevels);
+    // Create the TreePanel
+    var treePanel = treeViewer.CreateTreePanel(tree, boxWidth, boxHeight, 20);
+    // Convert panel into HTML/SVG
     return treeViewer.GetHtml(treePanel);
 });
 
