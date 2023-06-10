@@ -22,24 +22,22 @@
 
         public bool AddMargins => ViewElements == null;
 
-        public ViewElement(Orientation contentOrientation = Orientation.Horizontal, int topMargin = 0)
-            => (ContentOrientation, TopMargin) = (contentOrientation, topMargin);
-
         public ViewElement() { }
+
+        public ViewElement(Orientation contentOrientation)
+            => ContentOrientation = contentOrientation;
 
         public ViewElement(int width, int height)
             => (Width, Height) = (width, height);
 
-        private ViewElement AddContainer(
-            Orientation contentOrientation = Orientation.Horizontal,
-            int topMargin = 0)
-            => AddViewElement(this, new ViewElement(contentOrientation, topMargin));
+        private ViewElement AddContainer(Orientation contentOrientation)
+            => AddViewElement(this, new ViewElement(contentOrientation));
 
-        public ViewElement AddHorizontalBox(int topMargin = 0)
-            => AddContainer(Orientation.Horizontal, topMargin);
+        public ViewElement AddHorizontalBox()
+            => AddContainer(Orientation.Horizontal);
 
-        public ViewElement AddVerticalBox(int topMargin = 0)
-            => AddContainer(Orientation.Vertical, topMargin);
+        public ViewElement AddVerticalBox()
+            => AddContainer(Orientation.Vertical);
 
         public ViewElement AddElement(ViewElement viewElement)
         {
@@ -71,31 +69,32 @@
             {
                 CalculateSizeHorizontal();
             }
-            if (ContentOrientation == Orientation.Vertical)
+            else
             {
                 CalculateSizeVertical();
             }
+
+            void CalculateSizeHorizontal()
+            {
+                ViewElements.ForEach(e =>
+                {
+                    e.CalculateSizes();
+                    Width += e.LeftMargin + e.Width + (e.AddMargins ? Constants.SVG_MARGIN : 0);
+                    Height = Math.Max(Height, (e.AddMargins ? Constants.SVG_MARGIN : 0) + e.TopMargin + e.Height);
+                });
+            }
+
+            void CalculateSizeVertical()
+            {
+                ViewElements.ForEach(e =>
+                {
+                    e.CalculateSizes();
+                    Height += e.TopMargin + e.Height + (e.AddMargins ? Constants.SVG_MARGIN : 0);
+                    Width = Math.Max(Width, (e.AddMargins ? Constants.SVG_MARGIN : 0) + e.LeftMargin + e.Width);
+                });
+            }
         }
 
-        private void CalculateSizeHorizontal()
-        {
-            ViewElements.ForEach(e =>
-            {
-                e.CalculateSizes();
-                Width += e.LeftMargin + e.Width + (e.AddMargins ? Constants.SVG_MARGIN : 0);
-                Height = Math.Max(Height, (e.AddMargins ? Constants.SVG_MARGIN : 0) + e.TopMargin + e.Height);
-            });
-        }
-
-        private void CalculateSizeVertical()
-        {
-            ViewElements.ForEach(e =>
-            {
-                e.CalculateSizes();
-                Height += e.TopMargin + e.Height + (e.AddMargins ? Constants.SVG_MARGIN : 0);
-                Width = Math.Max(Width, (e.AddMargins ? Constants.SVG_MARGIN : 0) + e.LeftMargin + e.Width);
-            });
-        }
 
         private void CalculateXYs()
         {
@@ -104,34 +103,34 @@
             {
                 CalculateXYsHorizontal();
             }
-            if (ContentOrientation == Orientation.Vertical)
+            else
             {
                 CalculateXYsVertical();
             }
-        }
 
-        private void CalculateXYsHorizontal()
-        {
-            var xIncrement = X;
-            ViewElements.ForEach(e =>
+            void CalculateXYsHorizontal()
             {
-                e.X = xIncrement + e.LeftMargin + (e.AddMargins ? Constants.SVG_MARGIN : 0);
-                e.Y = e.TopMargin + Y + (e.AddMargins ? Constants.SVG_MARGIN : 0);
-                xIncrement = e.X + e.Width - e.LeftMargin;
-                e.CalculateXYs();
-            });
-        }
+                var xIncrement = X;
+                ViewElements.ForEach(e =>
+                {
+                    e.X = xIncrement + e.LeftMargin + (e.AddMargins ? Constants.SVG_MARGIN : 0);
+                    e.Y = e.TopMargin + Y + (e.AddMargins ? Constants.SVG_MARGIN : 0);
+                    xIncrement = e.X + e.Width - e.LeftMargin;
+                    e.CalculateXYs();
+                });
+            }
 
-        private void CalculateXYsVertical()
-        {
-            var yIncrement = Y;
-            ViewElements.ForEach(e =>
+            void CalculateXYsVertical()
             {
-                e.X = e.LeftMargin + X + (e.AddMargins ? Constants.SVG_MARGIN : 0);
-                e.Y = yIncrement + e.TopMargin + (e.AddMargins ? Constants.SVG_MARGIN : 0);
-                yIncrement = e.Y + e.Height;
-                e.CalculateXYs();
-            });
+                var yIncrement = Y;
+                ViewElements.ForEach(e =>
+                {
+                    e.X = e.LeftMargin + X + (e.AddMargins ? Constants.SVG_MARGIN : 0);
+                    e.Y = yIncrement + e.TopMargin + (e.AddMargins ? Constants.SVG_MARGIN : 0);
+                    yIncrement = e.Y + e.Height;
+                    e.CalculateXYs();
+                });
+            }
         }
     }
 }

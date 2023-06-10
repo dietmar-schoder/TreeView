@@ -5,11 +5,14 @@ namespace TreeView
         private const string FONT_FAMILY = "font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;";
         private const string FONT_SIZE = "font-size:14px;";
 
-        public MyTreeElement GenerateTree(int numberOfChildren, int numberOfLevels)
+        private readonly Tree.ITreePanel _treePanel;
+        private MyTreeElement _tree = new();
+
+        public TreeViewer(Tree.ITreePanel treePanel) => _treePanel = treePanel;
+
+        public void GenerateTree(int numberOfChildren, int numberOfLevels)
         {
-            var rootElement = new MyTreeElement();
-            GenerateChildren(rootElement);
-            return rootElement;
+            GenerateChildren(_tree);
 
             void GenerateChildren(MyTreeElement treeElement)
             {
@@ -24,15 +27,17 @@ namespace TreeView
             }
         }
 
-        public IResult GetHtml(Tree.TreePanel treePanel)
+        public IResult GetHtml(int boxWidth, int boxHeight, int margin)
         {
+            _treePanel.Calculate(_tree, boxWidth, boxHeight, margin);
+
             var html = $"<!DOCTYPE html><html style=\"{FONT_FAMILY}{FONT_SIZE}margin-left:calc(100vw - 100%);\">" +
                 $"<head><title>Schoder.Tree Example</title><meta charset=\"utf-8\"></head>" +
-                $"<body style=\"padding:0;width:{treePanel.Width}px;margin:0 auto;\">" +
-                $"<svg width=\"{treePanel.Width}\" height=\"{treePanel.Height}\"" +
-                $" viewBox=\"0 0 {treePanel.Width} {treePanel.Height}\" xmlns=\"http://www.w3.org/2000/svg\">";
+                $"<body style=\"padding:0;width:{_treePanel.Width}px;margin:0 auto;\">" +
+                $"<svg width=\"{_treePanel.Width}\" height=\"{_treePanel.Height}\"" +
+                $" viewBox=\"0 0 {_treePanel.Width} {_treePanel.Height}\" xmlns=\"http://www.w3.org/2000/svg\">";
 
-            foreach (MyTreeElement element in treePanel.TreeElements)
+            foreach (MyTreeElement element in _treePanel.TreeElements)
             {
                 html += element.ToSvg();
             }

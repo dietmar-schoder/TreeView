@@ -6,8 +6,7 @@
 
         public TreePanel() { }
 
-        private TreePanel(TreeElement rootElement, int boxWidth, int boxHeight, int margin)
-            : base()
+        public void Calculate(TreeElement rootElement, int boxWidth, int boxHeight, int margin)
         {
             var structureBox = AddVerticalBox();
             CreateViewElements(rootElement, structureBox);
@@ -51,19 +50,22 @@
 
             void AddConnections(TreeElement element)
             {
-                // boxWidth, boxHeight, margin
+                var w2 = boxWidth / 2;
+                var h = boxHeight;
+                var h2 = boxHeight / 2;
+                var m2 = margin / 2;
                 if (element.HasChildren)
                 {
                     if (element.ChildrenAreVertical)
                     {
-                        element.AddVerticalConnection(element.ViewElement.X + 10, element.ViewElement.Y + 111, element.Children.Last().ViewElement.Y + 56);
+                        element.AddVerticalConnection(element.ViewElement.X + m2, element.ViewElement.Y + h, element.Children.Last().ViewElement.Y + h2);
                     }
                     else
                     {
                         if (element.Children.Count > 1)
                         {
-                            element.AddVerticalConnection(element.ViewElement.X + 90, element.ViewElement.Y + 111, element.ViewElement.Y + 111 + 10);
-                            element.AddHorizontalConnection(element.Children.First().ViewElement.X + 90, element.Children.Last().ViewElement.X + 90, element.Children.First().ViewElement.Y - 10);
+                            element.AddVerticalConnection(element.ViewElement.X + w2, element.ViewElement.Y + h, element.ViewElement.Y + h + m2);
+                            element.AddHorizontalConnection(element.Children.First().ViewElement.X + w2, element.Children.Last().ViewElement.X + w2, element.Children.First().ViewElement.Y - m2);
                         }
                     }
 
@@ -71,11 +73,11 @@
                     {
                         if (element.ChildrenAreVertical)
                         {
-                            element.AddHorizontalConnection(element.ViewElement.X + 10, child.ViewElement.X, child.ViewElement.Y + 56);
+                            element.AddHorizontalConnection(element.ViewElement.X + m2, child.ViewElement.X, child.ViewElement.Y + h2);
                         }
                         else
                         {
-                            element.AddVerticalConnection(child.ViewElement.X + 90, child.ViewElement.Y, child.ViewElement.Y - (element.Children.Count == 1 ? 20 : 10));
+                            element.AddVerticalConnection(child.ViewElement.X + w2, child.ViewElement.Y, child.ViewElement.Y - (element.Children.Count == 1 ? margin : m2));
                         }
                     });
 
@@ -89,8 +91,5 @@
                 treeElement.Children.ForEach(child => Tree2List(child));
             }
         }
-
-        public TreePanel Create(TreeElement rootElement, int boxWidth, int boxHeight, int margin)
-            => new TreePanel(rootElement, boxWidth, boxHeight, margin);
     }
 }

@@ -2,6 +2,12 @@
 {
     public interface ITreePanel
     {
-        TreePanel Create(TreeElement rootElement, int boxWidth, int boxHeight, int margin);
+        int Width { get; set; }
+
+        int Height { get; set; }
+
+        List<TreeElement> TreeElements { get; set; }
+
+        void Calculate(TreeElement rootElement, int boxWidth, int boxHeight, int margin);
     }
 }

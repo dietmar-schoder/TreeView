@@ -2,8 +2,8 @@ namespace TreeView
 {
     public interface ITreeViewer
     {
-        MyTreeElement GenerateTree(int numberOfChildren, int numberOfLevels);
+        void GenerateTree(int numberOfChildren, int numberOfLevels);
 
-        IResult GetHtml(Tree.TreePanel treePanel);
+        IResult GetHtml(int boxWidth, int boxHeight, int margin);
     }
 }
