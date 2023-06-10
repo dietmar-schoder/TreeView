@@ -1,4 +1,4 @@
-﻿namespace TreeView.Tree
+﻿namespace TreeView
 {
     public static class Extensions
     {

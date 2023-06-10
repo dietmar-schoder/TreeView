@@ -20,14 +20,10 @@
 
         public Orientation ContentOrientation { get; set; }
 
-        public Alignment Alignment { get; set; }
-
-        public Position Position { get; set; }
-
         public bool AddMargins => ViewElements == null;
 
-        public ViewElement(Orientation contentOrientation = Orientation.Horizontal, Alignment alignment = Alignment.LeftTop, int topMargin = 0)
-            => (ContentOrientation, Alignment, TopMargin) = (contentOrientation, alignment, topMargin);
+        public ViewElement(Orientation contentOrientation = Orientation.Horizontal, int topMargin = 0)
+            => (ContentOrientation, TopMargin) = (contentOrientation, topMargin);
 
         public ViewElement() { }
 
@@ -36,15 +32,14 @@
 
         private ViewElement AddContainer(
             Orientation contentOrientation = Orientation.Horizontal,
-            Alignment alignment = Alignment.LeftTop,
             int topMargin = 0)
-            => AddViewElement(this, new ViewElement(contentOrientation, alignment, topMargin));
+            => AddViewElement(this, new ViewElement(contentOrientation, topMargin));
 
-        public ViewElement AddHorizontalBox(Alignment alignment = Alignment.LeftTop, int topMargin = 0)
-            => AddContainer(Orientation.Horizontal, alignment, topMargin);
+        public ViewElement AddHorizontalBox(int topMargin = 0)
+            => AddContainer(Orientation.Horizontal, topMargin);
 
-        public ViewElement AddVerticalBox(Alignment alignment = Alignment.LeftTop, int topMargin = 0)
-            => AddContainer(Orientation.Vertical, alignment, topMargin);
+        public ViewElement AddVerticalBox(int topMargin = 0)
+            => AddContainer(Orientation.Vertical, topMargin);
 
         public ViewElement AddElement(ViewElement viewElement)
         {
@@ -60,13 +55,6 @@
             CalculateXYs();
             return this;
         }
-
-        public virtual void AdaptWidthCenter()
-            => Width = Alignment == Alignment.Center
-                ? ParentViewElement.Width - LeftMargin - (AddMargins ? Constants.SVG_MARGIN : 0)
-                : Width;
-
-        public virtual void AdaptHeightCenter() { }
 
         private ViewElement AddViewElement(ViewElement parentViewElement, ViewElement viewElement)
         {
@@ -91,7 +79,7 @@
 
         private void CalculateSizeHorizontal()
         {
-            ViewElements.Where(e => e.Position == Position.Relative).ToList().ForEach(e =>
+            ViewElements.ForEach(e =>
             {
                 e.CalculateSizes();
                 Width += e.LeftMargin + e.Width + (e.AddMargins ? Constants.SVG_MARGIN : 0);
@@ -101,7 +89,7 @@
 
         private void CalculateSizeVertical()
         {
-            ViewElements.Where(e => e.Position == Position.Relative).ToList().ForEach(e =>
+            ViewElements.ForEach(e =>
             {
                 e.CalculateSizes();
                 Height += e.TopMargin + e.Height + (e.AddMargins ? Constants.SVG_MARGIN : 0);
@@ -125,11 +113,10 @@
         private void CalculateXYsHorizontal()
         {
             var xIncrement = X;
-            ViewElements.Where(e => e.Position == Position.Relative).ToList().ForEach(e =>
+            ViewElements.ForEach(e =>
             {
                 e.X = xIncrement + e.LeftMargin + (e.AddMargins ? Constants.SVG_MARGIN : 0);
                 e.Y = e.TopMargin + Y + (e.AddMargins ? Constants.SVG_MARGIN : 0);
-                e.AdaptHeightCenter();
                 xIncrement = e.X + e.Width - e.LeftMargin;
                 e.CalculateXYs();
             });
@@ -138,12 +125,10 @@
         private void CalculateXYsVertical()
         {
             var yIncrement = Y;
-            ViewElements.Where(e => e.Position == Position.Relative).ToList().ForEach(e =>
+            ViewElements.ForEach(e =>
             {
                 e.X = e.LeftMargin + X + (e.AddMargins ? Constants.SVG_MARGIN : 0);
-                e.X += Alignment == Alignment.Center ? (Width - e.Width - e.LeftMargin - (e.AddMargins ? Constants.SVG_MARGIN : 0)) / 2 : 0;
                 e.Y = yIncrement + e.TopMargin + (e.AddMargins ? Constants.SVG_MARGIN : 0);
-                e.AdaptWidthCenter();
                 yIncrement = e.Y + e.Height;
                 e.CalculateXYs();
             });

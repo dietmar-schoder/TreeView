@@ -1,39 +1,37 @@
-﻿using TreeView.Tree;
-
-namespace TreeView
+﻿namespace TreeView
 {
-    public class MyTreeElement : TreeElement
+    public class MyTreeElement : Tree.TreeElement
     {
-        public string Number { get; set; } = "1";
+        public string Number { get; set; }
 
-        public int Width { get; set; }
-
-        public int Height { get; set; }
-
-        public string ToSvg =>
-            $"<g transform=\"translate({ViewElement.X} {ViewElement.Y})\">" +
-
+        public string ToSvg()
+        {
+            // Draw box with number
+            var svg =  $"<g transform=\"translate({ViewElement.X} {ViewElement.Y})\">" +
             $"<rect x=\"0\" y=\"0\" rx=\"4px\" ry=\"4px\"" +
-            $" width=\"{Width}px\"" +
-            $" height=\"{Height}px\"" +
+            $" width=\"{ViewElement.Width}px\"" +
+            $" height=\"{ViewElement.Height}px\"" +
             $" style=\"fill:transparent;stroke-width:1;stroke:rgb(0,0,0)\" />" +
-
             $"<text alignment-baseline=\"middle\"" +
-            //$" font-size=\"{FontSize}\"" +
-            $" text-anchor=\"middle\" x=\"{Width / 2}\"" +
-            $" y=\"{Height / 2 + 1}\">{Number}" +
+            $" text-anchor=\"middle\" x=\"{ViewElement.Width / 2}\"" +
+            $" y=\"{ViewElement.Height / 2 + 1}\">{Number}" +
             $"</text>" +
-
             $"</g>";
 
-        public MyTreeElement NewChild()
+            // Draw lines connecting this element with its children
+            TreeElementConnections.ForEach(c =>
+                svg += $"<line x1=\"{c.X1}\" y1=\"{c.Y1}\" x2=\"{c.X2} \" y2=\" {c.Y2}\"" +
+                    $" style=\"stroke-width:1px;stroke:rgb(0,0,0)\" />");
+
+            return svg;
+        }
+
+        public MyTreeElement() => Number = "1";
+
+        public MyTreeElement(MyTreeElement parent)
         {
-            var child = new MyTreeElement();
-            child.Width = 180;
-            child.Height = (int)(child.Width / 1.61803398875);
-            AddAsChild(child);
-            child.Number = $"{Number}.{Children.Count}";
-            return child;
+            parent.AddAsChild(this);
+            Number = $"{parent.Number}.{parent.Children.Count}";
         }
     }
 }

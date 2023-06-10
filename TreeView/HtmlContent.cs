@@ -1,7 +1,7 @@
 ﻿using System.Net.Mime;
 using System.Text;
 
-namespace TreeView.Tree
+namespace TreeView
 {
     public class HtmlContent : IResult
     {
