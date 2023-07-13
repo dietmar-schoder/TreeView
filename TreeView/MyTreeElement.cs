@@ -6,6 +6,11 @@ namespace TreeView
     {
         public string Number { get; set; }
 
+        public MyTreeElement(string number = "1") => Number = number;
+
+        public MyTreeElement NewChild()
+            => AddAsChild(new MyTreeElement($"{Number}.{Children.Count + 1}")) as MyTreeElement;
+
         public string ToSvg()
         {
             var svg = new StringBuilder();
@@ -27,14 +32,6 @@ namespace TreeView
                 $" y=\"{ViewElement.Height / 2 + 1}\">{Number}" +
                 $"</text>" +
                 $"</g>").ToString();
-        }
-
-        public MyTreeElement() => Number = "1";
-
-        public MyTreeElement(MyTreeElement parent)
-        {
-            parent.AddAsChild(this);
-            Number = $"{parent.Number}.{parent.Children.Count}";
         }
     }
 }

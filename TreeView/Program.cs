@@ -10,13 +10,12 @@ var app = builder.Build();
 app.MapGet("index", (ITreeViewer treeViewer) =>
 {
     // Create a random data tree
-    int numberOfChildrenPerParent = 7, numberOfLevels = 3;
-    treeViewer.GenerateTree(numberOfChildrenPerParent, numberOfLevels);
+    treeViewer.GenerateTree(numberOfChildrenPerParent: 7, numberOfLevels: 3);
 
     // Calculate the TreePanel & convert it into HTML/SVG
     int boxWidth = 80;
     int boxHeight = (int)(boxWidth / 1.61803398875);
-    int margin = 12;
+    int margin = 32;
     return treeViewer.GetHtml(boxWidth, boxHeight, margin);
 });
 
