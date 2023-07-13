@@ -19,11 +19,11 @@ namespace TreeView
                 GenerateTree(numberOfChildrenPerParent, numberOfLevels, treeElement.NewChild());
             }
         }
+        public void CalculateScreene(int boxWidth, int boxHeight, int margin)
+            => _treePanel.Calculate(_tree, boxWidth, boxHeight, margin);
 
-        public IResult GetHtml(int boxWidth, int boxHeight, int margin)
+        public IResult GetHtmlSvg()
         {
-            _treePanel.Calculate(_tree, boxWidth, boxHeight, margin);
-
             (var width, var height) = (_treePanel.Width, _treePanel.Height);
             var fontFamily = "font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif;";
             var fontSize = "font-size:10px;";

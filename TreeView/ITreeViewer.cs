@@ -4,6 +4,8 @@ namespace TreeView
     {
         void GenerateTree(int numberOfChildrenPerParent, int numberOfLevels, MyTreeElement treeElement = null);
 
-        IResult GetHtml(int boxWidth, int boxHeight, int margin);
+        void CalculateScreene(int boxWidth, int boxHeight, int margin);
+
+        IResult GetHtmlSvg();
     }
 }
