@@ -1,6 +1,6 @@
 namespace TreeView
 {
-    public interface IMyTreeViewer
+    public interface ITreeViewer
     {
         void GenerateTree(int numberOfChildren, int numberOfLevels, MyTreeElement treeElement = null);
 

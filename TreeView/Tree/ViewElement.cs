@@ -12,7 +12,7 @@
 
         public int LeftMargin { get; set; }
 
-        public int TopMargin { get; set; }
+        public int RightBottomMargin { get; set; }
 
         public ViewElement ParentViewElement { get; set; }
 
@@ -20,43 +20,32 @@
 
         public Orientation ContentOrientation { get; set; }
 
-        public bool AddMargins => ViewElements == null;
+        private bool AddMargins => ViewElements == null;
 
         public ViewElement() { }
 
-        public ViewElement(Orientation contentOrientation)
-            => ContentOrientation = contentOrientation;
+        public ViewElement(Orientation contentOrientation) => ContentOrientation = contentOrientation;
 
-        public ViewElement(int width, int height)
-            => (Width, Height) = (width, height);
+        public ViewElement(int width, int height, int rightBottomMargin)
+            => (Width, Height, RightBottomMargin) = (width, height, rightBottomMargin);
 
-        private ViewElement AddContainer(Orientation contentOrientation)
-            => AddViewElement(this, new ViewElement(contentOrientation));
+        public ViewElement AddContainer(Orientation contentOrientation = Orientation.Vertical)
+            => AddViewElement(new ViewElement(contentOrientation));
 
-        public ViewElement AddHorizontalBox()
-            => AddContainer(Orientation.Horizontal);
+        public ViewElement AddElement(ViewElement viewElement) => AddViewElement(viewElement).ParentViewElement;
 
-        public ViewElement AddVerticalBox()
-            => AddContainer(Orientation.Vertical);
-
-        public ViewElement AddElement(ViewElement viewElement)
-        {
-            AddViewElement(this, viewElement);
-            return this;
-        }
-
-        public ViewElement CalculateSizesAndXYs()
+        protected ViewElement CalculateSizesAndXYs()
         {
             CalculateSizes();
-            Width += Constants.SVG_MARGIN;
-            Height += Constants.SVG_MARGIN;
-            CalculateXYs();
+            Width += RightBottomMargin;
+            Height += RightBottomMargin;
+            CalculatePositions();
             return this;
         }
 
-        private ViewElement AddViewElement(ViewElement parentViewElement, ViewElement viewElement)
+        private ViewElement AddViewElement(ViewElement viewElement)
         {
-            viewElement.ParentViewElement = parentViewElement;
+            viewElement.ParentViewElement = this;
             ViewElements = ViewElements ?? new();
             ViewElements.Add(viewElement);
             return viewElement;
@@ -64,71 +53,61 @@
 
         private void CalculateSizes()
         {
-            if (ViewElements == null) { return; }
-            if (ContentOrientation == Orientation.Horizontal)
+            if (ViewElements is not null)
             {
-                CalculateSizeHorizontal();
-            }
-            else
-            {
-                CalculateSizeVertical();
+                (ContentOrientation == Orientation.Horizontal).DoEither(CalculateHorizontalSize, CalculateVerticalSize);
             }
 
-            void CalculateSizeHorizontal()
+            void CalculateHorizontalSize()
             {
                 ViewElements.ForEach(e =>
                 {
                     e.CalculateSizes();
-                    Width += e.LeftMargin + e.Width + (e.AddMargins ? Constants.SVG_MARGIN : 0);
-                    Height = Math.Max(Height, (e.AddMargins ? Constants.SVG_MARGIN : 0) + e.TopMargin + e.Height);
+                    Width += e.LeftMargin + e.Width + (e.AddMargins ? e.RightBottomMargin : 0);
+                    Height = Math.Max(Height, (e.AddMargins ? e.RightBottomMargin : 0) + e.Height);
                 });
             }
 
-            void CalculateSizeVertical()
+            void CalculateVerticalSize()
             {
                 ViewElements.ForEach(e =>
                 {
                     e.CalculateSizes();
-                    Height += e.TopMargin + e.Height + (e.AddMargins ? Constants.SVG_MARGIN : 0);
-                    Width = Math.Max(Width, (e.AddMargins ? Constants.SVG_MARGIN : 0) + e.LeftMargin + e.Width);
+                    Height += e.Height + (e.AddMargins ? e.RightBottomMargin : 0);
+                    Width = Math.Max(Width, (e.AddMargins ? e.RightBottomMargin : 0) + e.LeftMargin + e.Width);
                 });
             }
         }
 
 
-        private void CalculateXYs()
+        private void CalculatePositions()
         {
-            if (ViewElements == null) { return; }
-            if (ContentOrientation == Orientation.Horizontal)
+            if (ViewElements is not null)
             {
-                CalculateXYsHorizontal();
-            }
-            else
-            {
-                CalculateXYsVertical();
+                (ContentOrientation == Orientation.Horizontal).DoEither(CalculateHorizontalPosition, CalculateVerticalPosition);
             }
 
-            void CalculateXYsHorizontal()
+            void CalculateHorizontalPosition()
             {
                 var xIncrement = X;
                 ViewElements.ForEach(e =>
                 {
-                    e.X = xIncrement + e.LeftMargin + (e.AddMargins ? Constants.SVG_MARGIN : 0);
-                    e.Y = e.TopMargin + Y + (e.AddMargins ? Constants.SVG_MARGIN : 0);
+                    e.X = xIncrement + e.LeftMargin + (e.AddMargins ? e.RightBottomMargin : 0);
+                    e.Y = Y + (e.AddMargins ? e.RightBottomMargin : 0);
                     xIncrement = e.X + e.Width - e.LeftMargin;
-                    e.CalculateXYs();
+                    e.CalculatePositions();
                 });
             }
 
-            void CalculateXYsVertical()
+            void CalculateVerticalPosition()
             {
                 var yIncrement = Y;
                 ViewElements.ForEach(e =>
                 {
-                    e.X = e.LeftMargin + X + (e.AddMargins ? Constants.SVG_MARGIN : 0);
-                    e.Y = yIncrement + e.TopMargin + (e.AddMargins ? Constants.SVG_MARGIN : 0);
+                    e.X = e.LeftMargin + X + (e.AddMargins ? e.RightBottomMargin : 0);
+                    e.Y = yIncrement + (e.AddMargins ? e.RightBottomMargin : 0);
                     yIncrement = e.Y + e.Height;
-                    e.CalculateXYs();
+                    e.CalculatePositions();
                 });
             }
         }

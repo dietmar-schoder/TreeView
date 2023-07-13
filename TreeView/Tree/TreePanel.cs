@@ -4,12 +4,11 @@
     {
         public List<TreeElement> TreeElements { get; set; } = new();
 
-        public TreePanel() { }
-
         public void Calculate(TreeElement rootElement, int boxWidth, int boxHeight, int margin)
         {
-            var structureBox = AddVerticalBox();
-            CreateViewElements(rootElement, structureBox);
+            (var w2, var h, var h2, var m2) = (boxWidth / 2, boxHeight, boxHeight / 2, margin / 2);
+            RightBottomMargin = margin;
+            CreateViewElements(rootElement, AddContainer());
             CalculateSizesAndXYs();
             CenterHorizontalParents(rootElement);
             AddConnections(rootElement);
@@ -17,12 +16,12 @@
 
             void CreateViewElements(TreeElement element, ViewElement parentBox)
             {
-                var branchBox = element.HasChildren ? parentBox.AddVerticalBox() : parentBox;
-                element.ViewElement = new ViewElement(boxWidth, boxHeight);
+                var branchBox = element.HasChildren ? parentBox.AddContainer() : parentBox;
+                element.ViewElement = new ViewElement(boxWidth, boxHeight, margin);
                 branchBox.AddElement(element.ViewElement);
                 if (element.HasChildren)
                 {
-                    var childrenBox = element.ChildrenAreVertical ? branchBox.AddVerticalBox() : branchBox.AddHorizontalBox();
+                    var childrenBox =  branchBox.AddContainer(element.ChildrenAreVertical ? Orientation.Vertical : Orientation.Horizontal);
                     childrenBox.LeftMargin = element is not null && element.ChildrenAreVertical ? margin : 0;
                     element.Children.ForEach(child => CreateViewElements(child, childrenBox));
                 }
@@ -50,10 +49,6 @@
 
             void AddConnections(TreeElement element)
             {
-                var w2 = boxWidth / 2;
-                var h = boxHeight;
-                var h2 = boxHeight / 2;
-                var m2 = margin / 2;
                 if (element.HasChildren)
                 {
                     if (element.ChildrenAreVertical)
@@ -65,7 +60,7 @@
                         if (element.Children.Count > 1)
                         {
                             element.AddVerticalConnection(element.ViewElement.X + w2, element.ViewElement.Y + h, element.ViewElement.Y + h + m2);
-                            element.AddHorizontalConnection(element.Children.First().ViewElement.X + w2, element.Children.Last().ViewElement.X + w2, element.Children.First().ViewElement.Y - m2);
+                            element.AddHorizontalConnection(element.Children.First().ViewElement.X + w2 - 0.5, element.Children.Last().ViewElement.X + w2 + 0.5, element.Children.First().ViewElement.Y - m2);
                         }
                     }
 

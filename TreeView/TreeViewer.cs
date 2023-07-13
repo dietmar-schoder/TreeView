@@ -2,15 +2,15 @@ using System.Text;
 
 namespace TreeView
 {
-    public class MyTreeViewer : IMyTreeViewer
+    public class TreeViewer : ITreeViewer
     {
-        private const string FONT_FAMILY = "font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;";
-        private const string FONT_SIZE = "font-size:14px;";
+        private const string FONT_FAMILY = "font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif;";
+        private const string FONT_SIZE = "font-size:10px;";
 
         private readonly Tree.ITreePanel _treePanel;
         private readonly MyTreeElement _tree = new();
 
-        public MyTreeViewer(Tree.ITreePanel treePanel) => _treePanel = treePanel;
+        public TreeViewer(Tree.ITreePanel treePanel) => _treePanel = treePanel;
 
         public void GenerateTree(int numberOfChildren, int numberOfLevels, MyTreeElement treeElement = null)
         {
@@ -25,8 +25,8 @@ namespace TreeView
         public IResult GetHtml(int boxWidth, int boxHeight, int margin)
         {
             _treePanel.Calculate(_tree, boxWidth, boxHeight, margin);
-            (var width, var height) = (_treePanel.Width, _treePanel.Height);
 
+            (var width, var height) = (_treePanel.Width, _treePanel.Height);
             var html = new StringBuilder($"<!DOCTYPE html><html lang=\"en\" style=\"{FONT_FAMILY}{FONT_SIZE}margin-left:calc(100vw - 100%);\">" +
                 $"<head><title>Schoder.Tree Example</title><meta charset=\"utf-8\"></head>" +
                 $"<body style=\"padding:0;width:{width}px;margin:0 auto;\">" +
@@ -35,9 +35,7 @@ namespace TreeView
 
             _treePanel.TreeElements.OfType<MyTreeElement>().ToList().ForEach(e => html.Append(e.ToSvg()));
 
-            html.Append("</svg></body></html>");
-
-            return new HtmlContent(html.ToString());
+            return new HtmlContent(html.Append("</svg></body></html>").ToString());
         }
     }
 }

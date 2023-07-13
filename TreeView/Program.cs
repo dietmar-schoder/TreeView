@@ -3,18 +3,20 @@ using TreeView;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<TreeView.Tree.ITreePanel, TreeView.Tree.TreePanel>();
-builder.Services.AddScoped<IMyTreeViewer, MyTreeViewer>();
+builder.Services.AddScoped<ITreeViewer, TreeViewer>();
 
 var app = builder.Build();
 
-app.MapGet("index", (IMyTreeViewer treeViewer) =>
+app.MapGet("index", (ITreeViewer treeViewer) =>
 {
     // Create a random data tree
-    int noOfChildrenPerParent = 4, noOfLevels = 4;
-    treeViewer.GenerateTree(noOfChildrenPerParent, noOfLevels);
+    int numberOfChildrenPerParent = 7, numberOfLevels = 3;
+    treeViewer.GenerateTree(numberOfChildrenPerParent, numberOfLevels);
 
     // Calculate the TreePanel & convert it into HTML/SVG
-    int boxWidth = 180, boxHeight = (int)(boxWidth / 1.61803398875), margin = 20;
+    int boxWidth = 80;
+    int boxHeight = (int)(boxWidth / 1.61803398875);
+    int margin = 12;
     return treeViewer.GetHtml(boxWidth, boxHeight, margin);
 });
 

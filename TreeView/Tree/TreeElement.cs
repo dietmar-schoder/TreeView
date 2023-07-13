@@ -23,7 +23,7 @@
         public void AddVerticalConnection(int x, int y1, int y2)
             => TreeElementConnections.Add(new TreeElementConnection(x, y1, x, y2));
 
-        public void AddHorizontalConnection(int x1, int x2, int y)
+        public void AddHorizontalConnection(double x1, double x2, double y)
             => TreeElementConnections.Add(new TreeElementConnection(x1, y, x2, y));
 
         public TreeElement AddAsChild(TreeElement element)
