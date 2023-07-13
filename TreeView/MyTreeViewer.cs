@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace TreeView
 {
     public class MyTreeViewer : IMyTreeViewer
@@ -6,45 +8,36 @@ namespace TreeView
         private const string FONT_SIZE = "font-size:14px;";
 
         private readonly Tree.ITreePanel _treePanel;
-        private MyTreeElement _tree = new();
+        private readonly MyTreeElement _tree = new();
 
         public MyTreeViewer(Tree.ITreePanel treePanel) => _treePanel = treePanel;
 
-        public void GenerateTree(int numberOfChildren, int numberOfLevels)
+        public void GenerateTree(int numberOfChildren, int numberOfLevels, MyTreeElement treeElement = null)
         {
-            GenerateChildren(_tree);
-
-            void GenerateChildren(MyTreeElement treeElement)
+            treeElement = treeElement ?? _tree;
+            if (treeElement.Level >= numberOfLevels - 1) { return; }
+            for (int i = 0; i < numberOfChildren; i++)
             {
-                for (int i = 0; i < numberOfChildren; i++)
-                {
-                    var child = new MyTreeElement(parent: treeElement);
-                    if (child.Level < numberOfLevels - 1)
-                    {
-                        GenerateChildren(child);
-                    }
-                }
+                GenerateTree(numberOfChildren, numberOfLevels, new MyTreeElement(parent: treeElement));
             }
         }
 
         public IResult GetHtml(int boxWidth, int boxHeight, int margin)
         {
             _treePanel.Calculate(_tree, boxWidth, boxHeight, margin);
+            (var width, var height) = (_treePanel.Width, _treePanel.Height);
 
-            var html = $"<!DOCTYPE html><html style=\"{FONT_FAMILY}{FONT_SIZE}margin-left:calc(100vw - 100%);\">" +
+            var html = new StringBuilder($"<!DOCTYPE html><html lang=\"en\" style=\"{FONT_FAMILY}{FONT_SIZE}margin-left:calc(100vw - 100%);\">" +
                 $"<head><title>Schoder.Tree Example</title><meta charset=\"utf-8\"></head>" +
-                $"<body style=\"padding:0;width:{_treePanel.Width}px;margin:0 auto;\">" +
-                $"<svg width=\"{_treePanel.Width}\" height=\"{_treePanel.Height}\"" +
-                $" viewBox=\"0 0 {_treePanel.Width} {_treePanel.Height}\" xmlns=\"http://www.w3.org/2000/svg\">";
+                $"<body style=\"padding:0;width:{width}px;margin:0 auto;\">" +
+                $"<svg width=\"{width}\" height=\"{height}\"" +
+                $" viewBox=\"0 0 {width} {height}\" xmlns=\"http://www.w3.org/2000/svg\">");
 
-            foreach (MyTreeElement element in _treePanel.TreeElements)
-            {
-                html += element.ToSvg();
-            }
+            _treePanel.TreeElements.OfType<MyTreeElement>().ToList().ForEach(e => html.Append(e.ToSvg()));
 
-            html += "</svg></body></html>";
+            html.Append("</svg></body></html>");
 
-            return new HtmlContent(html);
+            return new HtmlContent(html.ToString());
         }
     }
 }
