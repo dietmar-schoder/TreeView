@@ -11,7 +11,7 @@ namespace TreeView
         public MyTreeElement NewChild()
             => AddAsChild(new MyTreeElement($"{Number}.{Children.Count + 1}")) as MyTreeElement;
 
-        public string ToSvg()
+        public string ToTreeSvg()
         {
             var svg = new StringBuilder();
 
@@ -23,15 +23,27 @@ namespace TreeView
             // Draw box with number
             return svg.Append(
                 $"<g transform=\"translate({ViewElement.X} {ViewElement.Y})\">" +
-                $"<rect x=\"0\" y=\"0\" rx=\"4px\" ry=\"4px\"" +
+                "<rect x=\"0\" y=\"0\" rx=\"4px\" ry=\"4px\"" +
                 $" width=\"{ViewElement.Width}px\"" +
                 $" height=\"{ViewElement.Height}px\"" +
-                $" style=\"fill:transparent;stroke-width:1;stroke:rgb(0,0,0)\" />" +
-                $"<text alignment-baseline=\"middle\"" +
+                " style=\"fill:transparent;stroke-width:1;stroke:rgb(0,0,0)\" />" +
+                "<text alignment-baseline=\"middle\"" +
                 $" text-anchor=\"middle\" x=\"{ViewElement.Width / 2}\"" +
                 $" y=\"{ViewElement.Height / 2 + 1}\">{Number}" +
-                $"</text>" +
-                $"</g>").ToString();
+                "</text>" +
+                "</g>").ToString();
         }
+
+        public string ToListSvg(int lineNumber, int margin, int lineHeight, int boxHeight)
+            => $"<g transform=\"translate({margin + Level * lineHeight} {margin + lineNumber * lineHeight})\">" +
+                "<rect x=\"0\" y=\"0\" rx=\"4px\" ry=\"4px\"" +
+                " width=\"200px\"" +
+                $" height=\"{boxHeight}px\"" +
+                " style=\"fill:transparent;stroke-width:1;stroke:rgb(0,0,0)\" />" +
+                "<text alignment-baseline=\"middle\"" +
+                " text-anchor=\"start\" x=\"4\"" +
+                $" y=\"11\">{Number}" +
+                "</text>" +
+                "</g>";
     }
 }

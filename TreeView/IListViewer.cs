@@ -1,11 +1,11 @@
 namespace TreeView
 {
-    public interface ITreeViewer
+    public interface IListViewer
     {
         void GenerateTree(int numberOfChildrenPerParent, int numberOfLevels, MyTreeElement treeElement = null);
 
-        void CalculateScreen(int boxWidth, int boxHeight, int margin);
+        void CalculateScreen();
 
-        IResult GetHtmlSvg();
+        IResult GetHtmlSvg(int margin, int lineHeight, int boxHeight);
     }
 }
